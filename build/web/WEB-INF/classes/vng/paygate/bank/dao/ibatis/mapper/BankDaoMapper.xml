@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="vng.paygate.bank.dao.ibatis.mapper.BankDaoMapper">
+
+    <resultMap id="orderVerifyPayment" type="vng.paygate.domain.bo.BoOrder">
+        <result property="merchantCode" column="MERCHANT_CODE"/>
+        <result property="totalAmount" column="TOTAL_AMOUNT"/>
+        <result property="opAmount" column="OP_AMOUNT"/>
+        <result property="description" column="ORDER_DESCRIPTION"/>
+        <result property="createDate" column="CREATED_DATE"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="orderStatus" column="ORDER_STATUS"/>
+        <result property="custName" column="CUSTOMER_NAME"/>
+        <result property="custAddress" column="CUSTOMER_ADDRESS"/>
+        <result property="custPhone" column="CUSTOMER_PHONE"/>
+        <result property="accountName" column="ACCOUNT_LOGIN"/>
+        <result property="bankCode" column="BANK_CODE"/>
+        <result property="selectedBank" column="SUB_BANK"/>
+    </resultMap>
+    
+    <select id="verifyPayment" parameterType="map" statementType="CALLABLE">
+        {call sp_bi_bs_123pay_verifypayment(
+        #{orderNo,jdbcType=VARCHAR,mode=IN},
+        #{responseCode,jdbcType=INTEGER,mode=OUT},
+        #{lstOrder,jdbcType=CURSOR,mode=OUT,resultMap=orderVerifyPayment,javaType=java.sql.ResultSet},
+        #{description,jdbcType=VARCHAR,mode=OUT}
+        )
+        }
+    </select>
+    
+    <resultMap id="getOrderVerifyCard" type="vng.paygate.domain.bo.BoOrder">
+        <result property="merchantCode" column="MERCHANT_CODE"/>
+        <result property="totalAmount" column="TOTAL_AMOUNT"/>
+        <result property="opAmount" column="OP_AMOUNT"/>
+        <result property="description" column="ORDER_DESCRIPTION"/>
+        <result property="createDate" column="CREATED_DATE"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="custName" column="CUSTOMER_NAME"/>
+        <result property="custAddress" column="CUSTOMER_ADDRESS"/>
+        <result property="custPhone" column="CUSTOMER_PHONE"/>
+        <result property="accountName" column="ACCOUNT_LOGIN"/>
+        <result property="orderNoSuffix" column="ORDER_NO_SUFFIX"/>
+        <result property="orderStatus" column="ORDER_STATUS"/>
+        <result property="bankCode" column="BANK_CODE"/>
+        
+    </resultMap>
+    
+    <select id="loadOrderVCard" parameterType="map" statementType="CALLABLE">
+        {call sp_bi_get_order_v_card(
+        #{orderNo,jdbcType=VARCHAR,mode=IN},
+<!--        #{bankCode,jdbcType=VARCHAR,mode=IN},-->
+        #{lstOrder,jdbcType=CURSOR,mode=OUT,resultMap=getOrderVerifyCard,javaType=java.sql.ResultSet},
+        #{responseCode,jdbcType=INTEGER,mode=OUT}
+        )
+        }
+    </select>
+    
+    <parameterMap type="vng.paygate.bank.bo.BoBS" id="verifyCardParams">
+        <parameter property="transactionId" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="cardNo6First" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="cardNo4Last" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="cardNo" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="cardHash" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="cardHolderName" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="expireDate" jdbcType="DATE" mode="IN"/>
+        <parameter property="customerId" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="isSuccess" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="iOrderStatus" jdbcType="INTEGER" mode="IN"/>
+<!--        <parameter property="clientIp" jdbcType="VARCHAR" mode="IN"/>-->
+        
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="orderStatus" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="miNotifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+        <parameter property="description" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+    
+    <select id="verifyCard" parameterMap="verifyCardParams" statementType="CALLABLE">
+        {call sp_bi_banksim_verify_card(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)}
+    </select>
+    
+    <resultMap id="getOrderVerifyOTP" type="vng.paygate.bank.bo.BoBSOtp">
+        <result property="merchantCode" column="MERCHANT_CODE"/>
+        <result property="totalAmount" column="TOTAL_AMOUNT"/>
+        <result property="opAmount" column="OP_AMOUNT"/>
+        <result property="description" column="ORDER_DESCRIPTION"/>
+        <result property="createDate" column="CREATED_DATE"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="custName" column="CUSTOMER_NAME"/>
+        <result property="custAddress" column="CUSTOMER_ADDRESS"/>
+        <result property="custPhone" column="CUSTOMER_PHONE"/>
+        <result property="accountName" column="ACCOUNT_LOGIN"/>
+        <result property="orderNoSuffix" column="ORDER_NO_SUFFIX"/>
+        <result property="orderStatus" column="ORDER_STATUS"/>
+        <result property="bankCode" column="BANK_CODE"/>
+        <result property="merchantTransactionId" column="M_TRANSACTIONID"/>
+        <result property="cardNo" column="CARD_NO"/>
+        
+    </resultMap>
+    
+    <select id="loadOrderVOTP" parameterType="map" statementType="CALLABLE">
+        {call sp_bi_bs_get_order_info_v_otp(
+        #{orderNo,jdbcType=VARCHAR,mode=IN},
+        #{lstOrder,jdbcType=CURSOR,mode=OUT,resultMap=getOrderVerifyOTP,javaType=java.sql.ResultSet},
+        #{responseCode,jdbcType=INTEGER,mode=OUT}
+        )
+        }
+    </select>
+
+    <parameterMap type="vng.paygate.bank.bo.BoBS" id="notifyPendingParams">
+        <parameter property="transactionId" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankService" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="notifyOrQuery" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="miNotifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+
+    <select id="updateNotifyPending" parameterMap="notifyPendingParams" statementType="CALLABLE">
+        {call SP_BI_EIB_NOTIFY_PENDING(?,?,?,?,?,?,?)}
+    </select>
+    
+    <parameterMap type="vng.paygate.bank.bo.BoBS" id="notifySuccessParams">
+        <parameter property="transactionId" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankService" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="refNo" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="notifyOrQuery" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="miNotifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+    <select id="updateNotifySuccess" parameterMap="notifySuccessParams" statementType="CALLABLE">
+        {call SP_BI_NOTIFY_SUCCESS_B_TRANSID(?,?,?,?,?,?,?,?)}
+    </select>
+    
+    <parameterMap type="vng.paygate.bank.bo.BoBS" id="notifyFailParams">
+        <parameter property="transactionId" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankService" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="notifyOrQuery" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="orderStatus" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="miNotifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+    <select id="updateNotifyFail" parameterMap="notifyFailParams" statementType="CALLABLE">
+        {call SP_BI_123PAY_NOTIFY_FAIL(?,?,?,?,?,?,?,?)}
+    </select>
+     
+    <parameterMap type="vng.paygate.bank.bo.BoBS" id="updateOtpReinputParams">
+        <parameter property="transactionId" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="banksimCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankService" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="notifyOrQuery" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="numberInput" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="orderStatus" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="miNotifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+    <select id="updateOtpReinput" parameterMap="updateOtpReinputParams" statementType="CALLABLE">
+        {call SP_BI_BS_123PAY_OTP_RE_INPUT(?,?,?,?,?,?,?,?,?,?)}
+    </select>
+    
+    <resultMap id="getOrderForQuery" type="vng.paygate.bank.bo.BoBSOtp">
+        <result property="merchantCode" column="MERCHANT_CODE"/>
+        <result property="totalAmount" column="TOTAL_AMOUNT"/>
+        <result property="opAmount" column="OP_AMOUNT"/>
+        <result property="description" column="ORDER_DESCRIPTION"/>
+        <result property="createDate" column="CREATED_DATE"/>
+        <result property="orderNo" column="ORDER_NO"/>
+        <result property="custName" column="CUSTOMER_NAME"/>
+        <result property="custAddress" column="CUSTOMER_ADDRESS"/>
+        <result property="custPhone" column="CUSTOMER_PHONE"/>
+        <result property="accountName" column="ACCOUNT_LOGIN"/>
+        <result property="orderNoSuffix" column="ORDER_NO_SUFFIX"/>
+        <result property="orderStatus" column="ORDER_STATUS"/>
+        <result property="bankCode" column="BANK_CODE"/>
+        <result property="merchantTransactionId" column="M_TRANSACTIONID"/>
+        <result property="cardNo" column="CARD_NO"/>
+        
+    </resultMap>
+    
+    <select id="loadOrderForQuery" parameterType="map" statementType="CALLABLE">
+        {call sp_bi_bs_123pay_get_info_query(
+        #{orderNo,jdbcType=VARCHAR,mode=IN},
+        #{lstOrder,jdbcType=CURSOR,mode=OUT,resultMap=getOrderForQuery,javaType=java.sql.ResultSet},
+        #{responseCode,jdbcType=INTEGER,mode=OUT}
+        )
+        }
+    </select>
+    
+    <parameterMap type="vng.paygate.bank.bo.BoNotify" id="updateOrderSuccessParams">
+        <parameter property="orderNo" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankService" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="notifyOrQuery" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="notifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+    <select id="updateOrderSuccess" parameterMap="updateOrderSuccessParams" statementType="CALLABLE">
+        {call sp_bi_bank_notify_success(?,?,?,?,?,?,?)}
+    </select>
+    
+    <parameterMap type="vng.paygate.bank.bo.BoNotify" id="updateOrderFailParams">
+        <parameter property="orderNo" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankService" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="bankResponseCode" jdbcType="VARCHAR" mode="IN"/>
+        <parameter property="notifyOrQuery" jdbcType="INTEGER" mode="IN"/>
+        <parameter property="responseCode" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="orderStatus" jdbcType="INTEGER" mode="OUT"/>
+        <parameter property="notifyUrl" jdbcType="VARCHAR" mode="OUT"/>
+    </parameterMap>
+    <select id="updateOrderFail" parameterMap="updateOrderFailParams" statementType="CALLABLE">
+        {call sp_bi_bank_notify_fail(?,?,?,?,?,?,?,?)}
+    </select>
+    
+    <resultMap id="getOrderInfoMap" type="vng.paygate.domain.bo.BoOrder">
+        <result property="merchantCode" column="MERCHANT_CODE"/>
+        <result property="merchantTransactionId" column="M_TRANSACTIONID"/>
+        <result property="bankCode" column="BANK_CODE"/>
+        <result property="bankResponseCode" column="B_RESPONSE_CODE"/>
+        <result property="bankTransactionId" column="B_TRANSACTIONID"/>
+        <result property="accountID" column="ACCOUNT_ID"/>
+        <result property="accountName" column="ACCOUNT_LOGIN"/>
+        <result property="totalAmount" column="TOTAL_AMOUNT"/>
+        <result property="opAmount" column="OP_AMOUNT"/>
+        <result property="description" column="ORDER_DESCRIPTION"/>
+        <result property="createDate" column="CREATED_DATE"/>
+        <result property="orderStatus" column="ORDER_STATUS"/>
+        <result property="clientIP" column="CLIENT_IP"/>
+        <result property="orderNo" column="ORDER_NO"/>
+    </resultMap>
+    <select id="getOrderInfo" parameterType="map" statementType="CALLABLE">
+        {call sp_bi_get_order_info_querry(
+        #{orderNo,jdbcType=INTEGER,mode=IN},
+        #{lstOrder,jdbcType=CURSOR,mode=OUT,resultMap=getOrderInfoMap,javaType=java.sql.ResultSet},
+        #{responseCode,jdbcType=INTEGER,mode=OUT}
+        )
+        }
+    </select>
+</mapper>

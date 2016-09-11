@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:flow="http://www.springframework.org/schema/webflow-config"
+       xmlns:jms="http://www.springframework.org/schema/jms"
+       xmlns:jee="http://www.springframework.org/schema/jee"
+       xmlns:lang="http://www.springframework.org/schema/lang"
+       xmlns:osgi="http://www.springframework.org/schema/osgi"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd
+       http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.0.xsd
+       http://www.springframework.org/schema/jms http://www.springframework.org/schema/jms/spring-jms-2.5.xsd
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.5.xsd
+       http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.5.xsd
+       http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd">
+    
+<!--    <annotation-driven />-->
+<!--    <resources mapping="/internal/**" location="/internal/" />-->
+<context:annotation-config/> 
+    <context:component-scan base-package="vng.paygate.bank.ws.endpoint.restful" />
+
+    <!-- ========================= RESOURCE DEFINITIONS ========================= -->
+
+	<!-- Configurer that replaces ${...} placeholders with values from a properties file -->
+	<!-- (in this case, JDBC-related settings for the dataSource definition below) -->
+    <bean id="propertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+<!--                <value>/WEB-INF/jdbc.properties</value>-->
+                <value>/WEB-INF/log4j.properties</value>
+            </list>
+        </property>
+    </bean>
+    
+    <import resource="classpath*:/config/applicationContext-core.xml" />
+    
+<!--    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName">
+            <value>${jdbc.driverClassName}</value>
+        </property>
+        <property name="url">
+            <value>${jdbc.url}</value>
+        </property>
+        <property name="username">
+            <value>${jdbc.username}</value>
+        </property>
+        <property name="password">
+            <value>${jdbc.password}</value>
+        </property>
+    </bean>-->
+    
+    <bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+        <property name="jndiName">
+            <value>jdbc/paymentOracle</value>
+        </property>
+    </bean>
+
+    <bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource" ref="dataSource" />
+    </bean>
+    
+    <bean id="daoMapper" class="org.mybatis.spring.mapper.MapperFactoryBean">
+        <property name="mapperInterface" value="vng.paygate.bank.dao.ibatis.mapper.BankDaoMapper" />
+        <property name="sqlSessionFactory" ref="sqlSessionFactory" />
+    </bean>
+
+    <bean id="bankService" class="vng.paygate.bank.service.impl.BankServiceImpl" >
+        <property name="daoMapper" ref="daoMapper"/>
+    </bean>
+    
+<!--    <bean id="bankValidator" class="vng.paygate.bank.validator.BankValidator">
+        <property name="validator" ref="validator" />
+    </bean>-->
+    
+    <bean id="configService" class="vng.paygate.bank.service.impl.ConfigServiceImpl">
+        <constructor-arg index="0" value="/env.properties"/>
+        <constructor-arg index="1" value="/bank.properties"/>
+        <constructor-arg index="2" value="/moduleConfig.xml"/>
+        <constructor-arg index="3" value="vng.paygate.bank.jaxb.adapter.BoBIModuleConfigNew"/>
+        <constructor-arg index="4" ref="orderService"/>
+    </bean>
+    
+    
+    <bean id="logService" class="vng.paygate.domain.log.service.impl.LogService"/>
+    
+    <bean id="signatureService" class="vng.paygate.domain.signature.impl.SignatureServiceImpl">
+        <constructor-arg>
+            <ref bean="signatureFactory" />
+        </constructor-arg>
+    </bean>
+    
+
+    <bean id="signatureFactory" class="vng.paygate.bank.signature.BISignatureFactoryImpl" >
+        <property name="configService" ref="configService" />
+    </bean>    
+    
+<!--    <bean id="validator" class="net.sf.oval.Validator"> 
+        <constructor-arg>
+            <list>
+                <bean class="net.sf.oval.configuration.xml.XMLConfigurer">
+                    <constructor-arg type="java.io.InputStream" value="classpath:oval-validator.xml" />
+                </bean>
+            </list>
+        </constructor-arg>
+    </bean>-->
+</beans>
