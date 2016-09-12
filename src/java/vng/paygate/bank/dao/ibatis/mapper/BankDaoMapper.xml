@@ -30,7 +30,7 @@
         }
     </select>
     
-    <resultMap id="getOrderVerifyCard" type="vng.paygate.domain.bo.BoOrder">
+    <resultMap id="getOrderVerifyCard" type="vng.paygate.bank.bo.BoOrderNew">
         <result property="merchantCode" column="MERCHANT_CODE"/>
         <result property="totalAmount" column="TOTAL_AMOUNT"/>
         <result property="opAmount" column="OP_AMOUNT"/>
@@ -44,6 +44,7 @@
         <result property="orderNoSuffix" column="ORDER_NO_SUFFIX"/>
         <result property="orderStatus" column="ORDER_STATUS"/>
         <result property="bankCode" column="BANK_CODE"/>
+        <result property="subbankCode" column="SUB_BANK"/>
         
     </resultMap>
     

@@ -3,6 +3,7 @@ package vng.paygate.bank.service;
 import vng.paygate.bank.bo.BoBS;
 import vng.paygate.bank.bo.BoBSOtp;
 import vng.paygate.bank.bo.BoNotify;
+import vng.paygate.bank.bo.BoOrderNew;
 import vng.paygate.domain.bo.BoOrder;
 import vng.paygate.domain.exception.TechniqueException;
 
@@ -14,7 +15,7 @@ public interface IBankService {
 
     public BoOrder verifyPayment(String orderNo) throws TechniqueException;
     
-    public BoOrder loadOrderVerifyCard(String orderNo) throws TechniqueException;
+    public BoOrderNew loadOrderVerifyCard(String orderNo) throws TechniqueException;
     
     public String verifyCard(BoBS boEIB)  throws TechniqueException;
     

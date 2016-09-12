@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import vng.paygate.bank.bo.BoBS;
 import vng.paygate.bank.bo.BoCardInfo;
+import vng.paygate.bank.bo.BoOrderNew;
 import vng.paygate.bank.bo.BoProcessPaymentResponse;
 import vng.paygate.bank.common.CommonService;
 import vng.paygate.bank.common.ConstantBS;
@@ -138,8 +139,10 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
             }
             //query order from database
             appendMessage(logMessage, "loadOrderVerifyCard");
-            BoOrder boOrder = bankService.loadOrderVerifyCard(orderNo);
+            BoOrderNew boOrder = bankService.loadOrderVerifyCard(orderNo);
             System.out.println("BoOrder: " + gson.toJson(boOrder));
+            String subBankCodeConfig = boOrder.getSubbankCode();
+            System.out.println("SubBankCode: " + subBankCodeConfig);
             boResponse = getResponse(boOrder.getResponseCode());
             appendParams(logMessage, boResponse.getDetailResponseCode(), boResponse.getDetailDescription());
             if (!Constants.RESPONSE_CODE_1.equals(boResponse.getDetailResponseCode())) {
@@ -286,7 +289,7 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
         }
     }
 
-    private void notifyMerchant(BoBS boEIB, BoProcessPaymentResponse boResponse, BoOrder boOrder) throws TechniqueException {
+    private void notifyMerchant(BoBS boEIB, BoProcessPaymentResponse boResponse, BoOrderNew boOrder) throws TechniqueException {
         String rawData;
         /*
          * call notify to merchant to inform status of order
@@ -344,40 +347,14 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
             String checkPrefixCardNo = Constants.RESPONSE_CODE_1;
             if (!checkPrefix.equals(ConstantBS.ERROR_VERIFY_888888) && !checkPrefix.equals(ConstantBS.ERROR_VERIFY_999999)) {
                 appendMessage(logMessage, "checkPrefixCardNo");
-                checkPrefixCardNo = checkAllowCardInfo(cardHolderName, cardNo, boBank, "2");
-//                return checkPrefix;
+                checkPrefixCardNo = checkAllowCardInfo(cardHolderName, cardNo, boBank, boEIB.getBanksimCode(), "2");
             }
-            
-//            appendMessage(logMessage, "checkCardHoldName");
-            // Can phai biet do la card gi????
-//            String checkCardHoldName = checkAllowCardInfo(cardHolderName, cardNo, boBank, "0");
-//            appendMessage(logMessage, "checkCardHoldName:" + checkCardHoldName);
-            /*if (!Constants.RESPONSE_CODE_1.equals(checkCardHoldName)) {
-                if (!ConstantBS.ERROR_VERIFY_CARD_10.equals(checkCardHoldName)) {
-                    boEIB.setBankResponseCode(checkCardHoldName);
-                } else {
-                    boEIB.setBankResponseCode(ConstantBS.ERROR_VERIFY_CARD_10);
-                }
-//                boEIB.setBankResponseCode(ConstantBS.ERROR_VERIFY_CARD_10);
-                boEIB.setIsSuccess(-2);
-                appendMessage(logMessage, "set -2 line 345");
-            } else if (!Constants.RESPONSE_CODE_1.equals(checkPrefixCardNo)) {
-                if (!ConstantBS.ERROR_VERIFY_CARD_10.equals(checkPrefixCardNo)) {
-                    boEIB.setBankResponseCode(checkPrefixCardNo);
-                } else {
-                    boEIB.setBankResponseCode(ConstantBS.ERROR_VERIFY_CARD_10);
-                }
-//                boEIB.setBankResponseCode(ConstantBS.ERROR_VERIFY_CARD_10);
-                boEIB.setIsSuccess(-2);
-                appendMessage(logMessage, "set -2 line 354");
-            }else {*/
-
             Date expiredDate = boEIB.getExpireDate();
             String cashHash = boEIB.getCardHash();
             removeCardInfo(boEIB);
 
             appendMessage(logMessage, "checkAllowCardInfo");
-            String checkAllowCardInfo = checkAllowCardInfo(cardHolderName, cardNo, boBank, "1");
+            String checkAllowCardInfo = checkAllowCardInfo(cardHolderName, cardNo, boBank, boEIB.getBanksimCode(), "1");
             appendMessage(logMessage, checkAllowCardInfo);
             if (Constants.RESPONSE_CODE_1.equals(checkAllowCardInfo)) {
                 boEIB.setBankResponseCode(Constants.RESPONSE_CODE_1);
@@ -398,58 +375,9 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
             }
             appendMessage(logMessage, "SP_BI_BANKSIM_VERIFY_CARD");
             int iOrderStatus = 11;
-            if (boEIB.getCardNo6First().startsWith("686868")
-                    || // VCB
-                    boEIB.getCardNo6First().startsWith("970436")
-                    || // VCB
-                    boEIB.getCardNo6First().startsWith("620160")
-                    || // Vietin
-                    boEIB.getCardNo6First().startsWith("970415")
-                    || // Vietin
-                    boEIB.getCardNo6First().startsWith("1792")
-                    || // Dong A
-                    boEIB.getCardNo6First().startsWith("970406")
-                    || // Dong A
-                    boEIB.getCardNo6First().startsWith("970407")
-                    || // Techcombank
-                    boEIB.getCardNo6First().startsWith("889988")
-                    || // Techcombank
-                    boEIB.getCardNo6First().startsWith("888899")
-                    || // Techcombank
-                    boEIB.getCardNo6First().startsWith("970441")
-                    || // VIB
-                    boEIB.getCardNo6First().startsWith("180909")
-                    || // VIB
-                    boEIB.getCardNo6First().startsWith("180906")
-                    || // VIB
-                    boEIB.getCardNo6First().startsWith("970420")
-                    || // HDBank
-                    boEIB.getCardNo6First().startsWith("970437")
-                    || // HDBank
-                    boEIB.getCardNo6First().startsWith("970423")
-                    || // Tienphong
-                    boEIB.getCardNo6First().startsWith("126688")
-                    || // SHB
-                    boEIB.getCardNo6First().startsWith("970443")
-                    || // SHB
-                    boEIB.getCardNo6First().startsWith("16688")
-                    || // VietA
-                    boEIB.getCardNo6First().startsWith("970427")
-                    || // VietA
-                    boEIB.getCardNo6First().startsWith("193939")
-                    || // MB
-                    boEIB.getCardNo6First().startsWith("970422")
-                    || // MB
-                    boEIB.getCardNo6First().startsWith("970414")
-                    || // OCEAN
-                    boEIB.getCardNo6First().startsWith("970432")
-                    || // VPBANK
-                    boEIB.getCardNo6First().startsWith("981957") // VPBANK
-                    ) {
-                iOrderStatus = 20;
-
-            }
-            if (!"1111".equals(boEIB.getCardNo4Last())) {
+            if(boEIB.getIsSuccess() == 1){
+                iOrderStatus = 11;
+            }else{
                 try {
                     iOrderStatus = Integer.parseInt(boEIB.getCardNo4Last());
                 } catch (Exception ex) {
@@ -493,7 +421,7 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
         appendMessage(logMessage, Constants.RESPONSE_CODE_1);
     }
 
-    private void copyBoOrderToBoEIB(BoOrder boOrder, BoBS boEIB) {
+    private void copyBoOrderToBoEIB(BoOrderNew boOrder, BoBS boEIB) {
 //        boEIB.setAmount(boOrder.getTotalAmount());
         boEIB.setAmount(boOrder.getOpAmount());
         //Cause TIPSS compare int, not string so we remove 4 first characters in 123Pay transaction id.
@@ -509,6 +437,9 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
         ///
         boEIB.setBankCode(boOrder.getBankCode());
         boEIB.setCustomerId(null);
+        String subBankCode = boOrder.getSubbankCode();
+        subBankCode = subBankCode.substring(4, subBankCode.length());
+        boEIB.setBanksimCode(subBankCode);
     }
 
     private BoMiNotifyResponse invokeNotifyMerchant(String notifyUrl, String orderNo, String dataSign) throws Exception {
@@ -524,7 +455,7 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
         return bo;
     }
 
-    private void buildResponse(BoProcessPaymentResponse boResponse, BoOrder boOrder) {
+    private void buildResponse(BoProcessPaymentResponse boResponse, BoOrderNew boOrder) {
         boResponse.setOrderNo(boOrder.getOrderNo());
         boResponse.setOrderStatus(boOrder.getOrderStatus());
         boResponse.setMerchantTransactionId(boOrder.getMerchantTransactionId());
@@ -624,9 +555,9 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
      * @return
      * @since 2016.06.13
      */
-    public String checkAllowCardInfo(String cardHolderName, String cardNo, BoBaseBankNew boBaseBank, String flag) {
+    public String checkAllowCardInfo(String cardHolderName, String cardNo, BoBaseBankNew boBaseBank, String subBankCodeConfig, String flag) {
         appendMessage(logMessage, "checkAllowCardInfo");
-        List<BoCardInfo> lstBoCardInfo = boBaseBank.getSubBanks().get("EIB").getBoCardInfo();
+        List<BoCardInfo> lstBoCardInfo = boBaseBank.getSubBanks().get(subBankCodeConfig).getBoCardInfo();
         if (lstBoCardInfo.size() > 0) {
 
             for (BoCardInfo boCardInfo : lstBoCardInfo) {

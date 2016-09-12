@@ -7,6 +7,7 @@ import org.apache.commons.lang.StringUtils;
 import vng.paygate.bank.bo.BoBS;
 import vng.paygate.bank.bo.BoBSOtp;
 import vng.paygate.bank.bo.BoNotify;
+import vng.paygate.bank.bo.BoOrderNew;
 import vng.paygate.bank.dao.ibatis.mapper.BankDaoMapper;
 import vng.paygate.bank.service.IBankService;
 import vng.paygate.domain.bo.BoOrder;
@@ -41,13 +42,13 @@ public class BankServiceImpl implements IBankService {
     }
 
     @Override
-    public BoOrder loadOrderVerifyCard(String orderNo) throws TechniqueException {
+    public BoOrderNew loadOrderVerifyCard(String orderNo) throws TechniqueException {
         Map<String, Object> result = new HashMap<String, Object>();
-        BoOrder boOrder = new BoOrder();
+        BoOrderNew boOrder = new BoOrderNew();
         result.put("orderNo", orderNo);
         daoMapper.loadOrderVCard(result);
         
-        List<BoOrder> lstOrder = (List) result.get("lstOrder");
+        List<BoOrderNew> lstOrder = (List) result.get("lstOrder");
         if (lstOrder != null && !lstOrder.isEmpty()) {
             boOrder = lstOrder.get(0);
 //            boOrder.setResponseCode(result.get("responseCode").toString());

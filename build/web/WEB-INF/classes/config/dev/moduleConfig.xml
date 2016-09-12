@@ -24,10 +24,141 @@
                             <cardNo>1111111111117232</cardNo>
                             <bankCode>10</bankCode><!-- Invalid card number,Card not existed -->
                         </cardInfo>	
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117302</cardNo><!-- Duplicate Transaction -->
+                            <bankCode>7</bankCode>
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117302</cardNo><!-- Merchant ID/Code not existed -->
+                            <bankCode>6</bankCode>
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117211</cardNo><!-- Not Register Card -->
+                            <bankCode>5</bankCode>
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117212</cardNo>
+                            <bankCode>4</bankCode> <!-- Internet banking service Suspend -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117201</cardNo>
+                            <bankCode>3</bankCode> <!-- Not Enough Balance -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117231</cardNo>
+                            <bankCode>2</bankCode><!-- Wrong Card Holder Name -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117212</cardNo>
+                            <bankCode>1</bankCode><!-- Not Register Service -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117007</cardNo>
+                            <bankCode>-3</bankCode><!-- Wrong Digital Signature -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117100</cardNo>
+                            <bankCode>-2</bankCode><!-- Invalid parameter -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117300</cardNo>
+                            <bankCode>-1</bankCode><!-- System Error at bank -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117007</cardNo>
+                            <bankCode>-4</bankCode><!-- Can not decrypt card information -->
+                        </cardInfo>
+                    </cardInfos>
+                </subBank>
+                <subBank>
+                    <subBankCode>VTB</subBankCode>
+                    <cardInfos>
+                        <cardInfo>
+                            <prefixCardNo>970431000031</prefixCardNo>
+                            <cardHolderName>PHAM THI KIM NGAN</cardHolderName>
+                            <cardNo>9704310000310000</cardNo>
+                        </cardInfo>
+                        <!-- card error -->
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117302</cardNo><!-- Merchant ID/Code not existed -->
+                            <bankCode>1</bankCode>
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117213</cardNo><!-- Merchant ID/Code not existed -->
+                            <bankCode>2</bankCode>
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117211</cardNo><!-- Not Register Card -->
+                            <bankCode>3</bankCode>
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117232</cardNo>
+                            <bankCode>4</bankCode><!-- Invalid card number,Card not existed -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117201</cardNo>
+                            <bankCode>5</bankCode> <!-- Not Enough Balance -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117205</cardNo>
+                            <bankCode>6</bankCode> <!-- Vượt hạn mức thanh toán -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117402</cardNo>
+                            <bankCode>7</bankCode> <!-- TransID đã được giao dịch thành công -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117000</cardNo>
+                            <bankCode>9</bankCode> <!-- Check MAC không thành công -->
+                        </cardInfo>
+                        <cardInfo>
+                            <prefixCardNo>111111111111</prefixCardNo>
+                            <cardHolderName>NGUYEN VAN A</cardHolderName>
+                            <cardNo>1111111111117300</cardNo>
+                            <bankCode>99</bankCode> <!-- System Error at bank -->
+                        </cardInfo>
                     </cardInfos>
                 </subBank>
             </subBanks>
-        </bank>  
+        </bank>
     </banks>
     <!-- Intenal secret key (for MI, Controller )-->
     <secretKey>b</secretKey>
