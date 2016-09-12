@@ -19,7 +19,8 @@ import vng.paygate.domain.bo.BoBase;
 @XmlRootElement
 public class SubBank extends BoBase{
     private String subBankCode;
-     private List<BoCardInfo> boCardInfo;
+    private String isInputOTP;
+    private List<BoCardInfo> boCardInfo;
     public SubBank() {
     }
 
@@ -32,7 +33,15 @@ public class SubBank extends BoBase{
     public List<BoCardInfo> getBoCardInfo() {
         return boCardInfo;
     }
+    @XmlElement
+    public String getIsInputOTP() {
+        return isInputOTP;
+    }
 
+    public void setIsInputOTP(String isInputOTP) {
+        this.isInputOTP = isInputOTP;
+    }
+    
     public void setSubBankCode(String subBankCode) {
         this.subBankCode = subBankCode;
     }

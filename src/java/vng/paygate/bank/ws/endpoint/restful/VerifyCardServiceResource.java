@@ -356,7 +356,7 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
             appendMessage(logMessage, "checkAllowCardInfo");
             String checkAllowCardInfo = checkAllowCardInfo(cardHolderName, cardNo, boBank, boEIB.getBanksimCode(), "1");
             appendMessage(logMessage, checkAllowCardInfo);
-            if (Constants.RESPONSE_CODE_1.equals(checkAllowCardInfo)) {
+            if (checkAllowCardInfo.equals("0")) {
                 boEIB.setBankResponseCode(Constants.RESPONSE_CODE_1);
                 boEIB.setIsSuccess(1);
                 appendMessage(logMessage, Constants.RESPONSE_CODE_1);
@@ -374,9 +374,12 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
                 boEIB.setIsSuccess(-2);
             }
             appendMessage(logMessage, "SP_BI_BANKSIM_VERIFY_CARD");
+            String bankCode = boEIB.getBankCode();
             int iOrderStatus = 11;
             if(boEIB.getIsSuccess() == 1){
-                iOrderStatus = 11;
+                if(boBank.getSubBanks().get(boEIB.getBanksimCode()).getIsInputOTP().equals("1")){
+                    iOrderStatus = 20;
+                }
             }else{
                 try {
                     iOrderStatus = Integer.parseInt(boEIB.getCardNo4Last());
@@ -389,8 +392,10 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
             appendMessage(logMessage, "boEIB.getiOrderStatus:" + boEIB.getiOrderStatus() + "Last:" + boEIB.getCardNo4Last());
             appendMessage(logMessage, "boEIB.getIsSuccess:" + boEIB.getIsSuccess());
             // Call BankService SP_BI_BANKSIM_VERIFY_CARD
+            boEIB.setBankCode(boEIB.getBanksimCode());
             bankService.verifyCard(boEIB);
-
+            boEIB.setBankCode(bankCode);
+            
             if (boEIB.getResponseCode() != null && boEIB.getResponseCode().intValue() == Integer.valueOf(Constants.RESPONSE_CODE_1)) {
                 appendParams(logMessage, "getResponseCode: " + boEIB.getResponseCode().intValue(), "getOrderStatus:" + boEIB.getOrderStatus().intValue(), boEIB.getMiNotifyUrl());
                 String responseCode = boEIB.getResponseCode().toString();
