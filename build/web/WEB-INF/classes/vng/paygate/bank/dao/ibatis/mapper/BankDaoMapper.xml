@@ -99,7 +99,7 @@
         <result property="bankCode" column="BANK_CODE"/>
         <result property="merchantTransactionId" column="M_TRANSACTIONID"/>
         <result property="cardNo" column="CARD_NO"/>
-        
+        <result property="subbankCode" column="SUB_BANK"/>
     </resultMap>
     
     <select id="loadOrderVOTP" parameterType="map" statementType="CALLABLE">

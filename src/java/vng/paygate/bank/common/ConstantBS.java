@@ -58,6 +58,9 @@ public class ConstantBS extends Constants{
     public static final String ERROR_VERIFY_OTP_3 = "03";
     public static final String ERROR_VERIFY_OTP_4 = "04";
     public static final String ERROR_VERIFY_OTP_5 = "05";
+    public static final String ERROR_VERIFY_OTP_7 = "07";
+    public static final String ERROR_VERIFY_OTP_12 = "12";
+    public static final String ERROR_VERIFY_OTP_13 = "13";
     public static final String ERROR_VERIFY_OTP_14 = "14";
     public static final String ERROR_VERIFY_OTP_20 = "20";
     public static final String ERROR_VERIFY_OTP_21 = "21";
@@ -67,6 +70,7 @@ public class ConstantBS extends Constants{
     public static final String ERROR_VERIFY_OTP_51 = "51";
     public static final String ERROR_VERIFY_OTP_54 = "54";
     public static final String ERROR_VERIFY_OTP_58 = "58";
+    public static final String ERROR_VERIFY_OTP_61 = "61";
     public static final String ERROR_VERIFY_OTP_8 = "08";
     public static final String ERROR_VERIFY_OTP_91 = "91";
     public static final String ERROR_VERIFY_OTP_96 = "96";

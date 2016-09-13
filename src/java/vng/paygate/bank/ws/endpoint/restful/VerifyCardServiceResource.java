@@ -22,6 +22,8 @@ import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import vng.paygate.bank.BankAbstract.BankAbstract;
+import vng.paygate.bank.BankAbstract.BankFactory;
 import vng.paygate.bank.bo.BoBS;
 import vng.paygate.bank.bo.BoCardInfo;
 import vng.paygate.bank.bo.BoOrderNew;
@@ -354,9 +356,12 @@ public class VerifyCardServiceResource extends CommonService<BoProcessPaymentRes
             removeCardInfo(boEIB);
 
             appendMessage(logMessage, "checkAllowCardInfo");
-            String checkAllowCardInfo = checkAllowCardInfo(cardHolderName, cardNo, boBank, boEIB.getBanksimCode(), "1");
+            BankFactory bankFactory = new BankFactory();
+            BankAbstract bank = bankFactory.createBank(boEIB.getBanksimCode());
+//            String checkAllowCardInfo = checkAllowCardInfo(cardHolderName, cardNo, boBank, boEIB.getBanksimCode(), "1");
+            String checkAllowCardInfo = bank.checkAllowCardInfo(logMessage, cardHolderName, cardNo, boBank, boEIB.getBanksimCode(), "1");
             appendMessage(logMessage, checkAllowCardInfo);
-            if (checkAllowCardInfo.equals("0")) {
+            if (checkAllowCardInfo.equals("1")) {
                 boEIB.setBankResponseCode(Constants.RESPONSE_CODE_1);
                 boEIB.setIsSuccess(1);
                 appendMessage(logMessage, Constants.RESPONSE_CODE_1);

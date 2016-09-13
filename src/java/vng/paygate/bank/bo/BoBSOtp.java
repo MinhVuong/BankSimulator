@@ -13,6 +13,7 @@ import vng.paygate.domain.bo.BoOrder;
 public class BoBSOtp extends BoOrder{
     private String cardNo;
     private String miNotifyUrl;
+    private String subbankCode;
     
     public String getCardNo() {
         return cardNo;
@@ -28,6 +29,14 @@ public class BoBSOtp extends BoOrder{
 
     public void setMiNotifyUrl(String miNotifyUrl) {
         this.miNotifyUrl = miNotifyUrl;
+    }
+
+    public String getSubbankCode() {
+        return subbankCode;
+    }
+
+    public void setSubbankCode(String subbankCode) {
+        this.subbankCode = subbankCode;
     }
     
 }

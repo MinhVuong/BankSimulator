@@ -19,6 +19,8 @@ import vng.paygate.domain.common.Constants;
  */
 public abstract class BankAbstract {
     public abstract String VerifyCard(StringBuilder logMessage, BoBS boEIB, BoBaseBankNew boBank, IBankService bankService);
+    public abstract String checkAllowCardInfo(StringBuilder logMessage, String cardHolderName, String cardNo, BoBaseBankNew boBaseBank, String subBankCodeConfig, String flag);
+    public abstract String VerifyOTP(StringBuilder logMessage, BoBS boEIB);
     
     public void appendMessage(StringBuilder logMessage, String... messages) {
         for (String mess : messages) {

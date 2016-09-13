@@ -1,5 +1,6 @@
 package vng.paygate.bank.ws.endpoint.restful;
 
+import com.google.gson.Gson;
 import com.sun.jersey.api.client.ClientHandlerException;
 import com.sun.xml.ws.client.ClientTransportException;
 import java.io.IOException;
@@ -21,9 +22,12 @@ import javax.ws.rs.core.MediaType;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import vng.paygate.bank.BankAbstract.BankAbstract;
+import vng.paygate.bank.BankAbstract.BankFactory;
 import vng.paygate.bank.bo.*;
 import vng.paygate.bank.common.CommonService;
 import vng.paygate.bank.common.ConstantBS;
+import vng.paygate.bank.common.MyConstants;
 import vng.paygate.bank.jaxb.adapter.BoBaseBank;
 import vng.paygate.bank.jaxb.adapter.BoBaseBankNew;
 import vng.paygate.bank.service.IBankService;
@@ -68,7 +72,7 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
         BoProcessPaymentResponse boResponse;
         contextPath = request.getContextPath().replace("/", "");
         logMessage = new StringBuilder();
-
+        Gson gson = new Gson();
         try {
             logService.initLogMessage(DateUtils.getDate(new Date(), dateFormat), request.getLocalAddr(), Constants.BI + "-"
                     + contextPath.toUpperCase(), serviceName, "", request.getRemoteHost(), request.getRemoteAddr());
@@ -140,6 +144,7 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
             appendMessage(logMessage, "loadOrderVerifyOTP");
             // sp_bi_bs_get_order_info_v_otp(
             BoBSOtp boOrder = bankService.loadOrderVerifyOTP(orderNo);
+            System.out.println("BoBSOtp: " + gson.toJson(boOrder));
             boResponse = getResponse(boOrder.getResponseCode());
             appendParams(logMessage, boResponse.getDetailResponseCode(), boResponse.getDetailDescription());
             if (!Constants.RESPONSE_CODE_1.equals(boResponse.getDetailResponseCode())) {
@@ -173,7 +178,11 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
 
             //check otp
             appendMessage(logMessage, "processOTP", otp);
-            String response = processOTP(boEIB);
+            BankFactory bankFactory = new BankFactory();
+            BankAbstract bank = bankFactory.createBank(boEIB.getBanksimCode());
+            String response = bank.VerifyOTP(logMessage, boEIB);
+            boEIB.setBanksimCode(ConstantBS.BANK_SIM_CODE);
+//            String response = processOTP(boEIB);
             appendMessage(logMessage, "processOTP", response);
             String status;
             if (ConstantBS.ERROR_VERIFY_OTP_77777777.equals(response)) {
@@ -207,12 +216,19 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
                         || Constants.ERROR_7300.equals(response)
                         || Constants.ERROR_7234.equals(response)
                         || Constants.ERROR_7201.equals(response)
+                        || MyConstants.ERROR_7230.equals(response)
+                        || MyConstants.ERROR_7255.equals(response)
+                        || Constants.ERROR_7302.equals(response)
+                        || Constants.ERROR_7007.equals(response)
+                        || Constants.ERROR_7235.equals(response)
+                        || Constants.ERROR_7202.equals(response)
                         || Constants.ERROR_7233.equals(response)) {
                     //invalid OTP
                     //TODO: call SP_BI_EIB_NOTIFY_REINPUT (update 20 to 11)
                     appendParams(logMessage, boEIB.getTransactionId(), boEIB.getBankCode(), boEIB.getBankService(),
                             boEIB.getBankResponseCode(), "" + boEIB.getNotifyOrQuery(), "" + boEIB.getNumberInput());
                     appendMessage(logMessage, "updateOtpReinput");
+                    // SP_BI_BS_123PAY_OTP_RE_INPUT(?,?,?,?,?,?,?,?,?,?)}
                     bankService.updateOtpReinput(boEIB);
                     if (boEIB.getResponseCode() == null || !Constants.RESPONSE_CODE_1.equals("" + boEIB.getResponseCode().intValue())) {
                         appendParams(logMessage, "updateOtpReinput is fail");
@@ -392,7 +408,9 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
         boEIB.setBankCode(boOrder.getBankCode());
         boEIB.setCustomerId(null);
         boEIB.setCardNo(boOrder.getCardNo());
-        boEIB.setBanksimCode(ConstantBS.BANK_SIM_CODE);
+        String subBankCode = boOrder.getSubbankCode();
+        subBankCode = subBankCode.substring(4, subBankCode.length());
+        boEIB.setBanksimCode(subBankCode);
     }
 
     private String processOTP(BoBS boEIB) {
