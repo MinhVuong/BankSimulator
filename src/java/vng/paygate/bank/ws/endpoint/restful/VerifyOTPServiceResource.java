@@ -144,6 +144,7 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
             appendMessage(logMessage, "loadOrderVerifyOTP");
             // sp_bi_bs_get_order_info_v_otp(
             BoBSOtp boOrder = bankService.loadOrderVerifyOTP(orderNo);
+            String subBankCode = boOrder.getSubbankCode();
             System.out.println("BoBSOtp: " + gson.toJson(boOrder));
             boResponse = getResponse(boOrder.getResponseCode());
             appendParams(logMessage, boResponse.getDetailResponseCode(), boResponse.getDetailDescription());
@@ -276,7 +277,7 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
                 }
 
                 //update bank notify success/fail
-                boolean isUpdatedSuccess = updateNotify(status, boEIB, boOrder, boResponse, logMessage);
+                boolean isUpdatedSuccess = updateNotify(status, boEIB, boOrder, boResponse, subBankCode, logMessage);
                 if (!isUpdatedSuccess) {
                     boResponse = getResponse(boResponse.getDetailResponseCode());
                     appendParams(logMessage, boResponse.getGroupResponseCode(), boResponse.getDetailResponseCode(),
@@ -505,15 +506,19 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
         return Constants.RESPONSE_CODE_1;
     }
 
-    private boolean updateNotify(String status, BoBS boEIB, BoOrder boOrder, BoProcessPaymentResponse boResponse, StringBuilder logMessage) throws TechniqueException {
+    private boolean updateNotify(String status, BoBS boEIB, BoOrder boOrder, BoProcessPaymentResponse boResponse, String subBankCode, StringBuilder logMessage) throws TechniqueException {
         boEIB.setNotifyOrQuery(1);
         appendParams(logMessage, boEIB.getTransactionId(), boEIB.getBankCode(), "" + boEIB.getBankService(), boEIB.getBankResponseCode(),
                 "" + boEIB.getNotifyOrQuery());
         if (status.equals(Constants.NOTIFY_PENDING)) {
             appendMessage(logMessage, "SP_BI_EIB_NOTIFY_PENDING");
             //Update BI notify pending
+            String temp = boEIB.getBanksimCode();
+            String temp1 = subBankCode.substring(4, subBankCode.length());
+            boEIB.setBanksimCode(temp1);
             bankService.updateNotify(boEIB, Constants.NOTIFY_PENDING);
-
+            boEIB.setBanksimCode(temp);
+            
             if (!Constants.RESPONSE_CODE_1.equals("" + boEIB.getResponseCode().intValue())) {
                 appendMessage(logMessage, "" + boEIB.getResponseCode());
 //                writeLogError(Constants.ERROR_5000, StringUtils.defaultIfEmpty(Integer.toString(boEIB.getResponseCode()), 
@@ -539,8 +544,12 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
         } else if (status.equals(Constants.NOTIFY_SUCCESS)) {
             appendMessage(logMessage, "SP_BI_123PAY_NOTIFY_SUCCESS");
             //Update BI notify success
+            String temp = boEIB.getBanksimCode();
+            String temp1 = subBankCode.substring(4, subBankCode.length());
+            boEIB.setBanksimCode(temp1);
             bankService.updateNotify(boEIB, Constants.NOTIFY_SUCCESS);
-
+            boEIB.setBanksimCode(temp);
+            
             if (!Constants.RESPONSE_CODE_1.equals("" + boEIB.getResponseCode().intValue())) {
                 appendParams(logMessage, "" + boEIB.getResponseCode());
 //                writeLogError(Constants.ERROR_5000, StringUtils.defaultIfEmpty(Integer.toString(boEIB.getResponseCode()), Constants.ERROR_5000), 
@@ -554,7 +563,12 @@ public class VerifyOTPServiceResource extends CommonService<BoProcessPaymentResp
         } else {
             appendMessage(logMessage, "SP_BI_123PAY_NOTIFY_FAIL");
             //Update BI notify fail
+            String temp = boEIB.getBanksimCode();
+            String temp1 = subBankCode.substring(4, subBankCode.length());
+            boEIB.setBanksimCode(temp1);
+            
             bankService.updateNotify(boEIB, Constants.NOTIFY_FAIL);
+             boEIB.setBanksimCode(temp);
             if (!Constants.RESPONSE_CODE_1.equals("" + boEIB.getResponseCode().intValue())) {
                 appendParams(logMessage, "" + boEIB.getResponseCode().intValue());
 //                writeLogError(Constants.ERROR_5000, StringUtils.defaultIfEmpty(Integer.toString(boEIB.getResponseCode()), Constants.ERROR_5000), 

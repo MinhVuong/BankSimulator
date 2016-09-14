@@ -271,7 +271,8 @@ public class EximBank extends BankAbstract{
                     return Constants.ERROR_7202;
                 }else if (result.equals(ConstantBS.ERROR_VERIFY_OTP_91)) {
                     boEIB.setBankResponseCode(ConstantBS.ERROR_VERIFY_OTP_91);
-                    boEIB.setIsSuccess(-1);
+//                    boEIB.setIsSuccess(-1);
+                    return Constants.RESPONSE_TIME_OUT;
                 }else if (result.equals(ConstantBS.ERROR_VERIFY_OTP_96)) {
                     boEIB.setBankResponseCode(ConstantBS.ERROR_VERIFY_OTP_96);
                     return Constants.ERROR_7300;
